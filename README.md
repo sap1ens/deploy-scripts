@@ -1,1 +1,1 @@
-Tomcat deploy tool
+Deployment (and not only...) tool for work in Apache Tomcat + Maven + ... + Less environment
