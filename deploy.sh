@@ -55,7 +55,10 @@ less() {
 }
 
 static() {
-	echo $1
+	for i in "${!static_path[@]}"
+	do
+		result=`sudo cp -R $root_path/${static_path[$i]} $tomcat_path/webapps/$tomcat_app/`
+	done
 }
 
 tomcat() {
@@ -125,7 +128,7 @@ if [ $# -gt 0 ]; then
     case $command
     in
     	"help") 
-			echo "`help`"
+			echo "$(help)"
 		;;
 
     	"version") 
@@ -143,12 +146,12 @@ if [ $# -gt 0 ]; then
 
 		"less")
 			# TODO
-			echo "`help`"
+			echo "$(help)"
 		;;
 
 		"static")
 			# TODO
-			echo "`help`"
+			echo "$(static)"
 		;;
 
 		"tomcat")
@@ -165,16 +168,16 @@ if [ $# -gt 0 ]; then
 		;;				
 
 		"full")
-			# TODO
-			echo "`help`"
+			echo "$(build)"
+			echo "$(war)"
 		;;
 
 		"full-static")
-			# TODO
-			echo "`help`"
+			# TODO add less
+			echo "$(static)"
 		;;								
     esac
 
 else
-	echo "`help`"
+	echo "$(help)"
 fi
