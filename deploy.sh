@@ -3,14 +3,14 @@
 ### config vars
 
 # root path for project, MUST HAS NOT trailing slash
-root_path="~/_Dev/10sheet/10sheet"
+root_path="$HOME/_Dev/10sheet/10sheet"
 
 # list of paths with static files; from root_path
 static_path[0]="src/main/webapp/templates"
-static_path[1]="src/main/webapp/templates"
-static_path[2]="src/main/webapp/templates"
-static_path[3]="src/main/webapp/templates"
-static_path[4]="src/main/webapp/templates"
+static_path[1]="src/main/webapp/js"
+static_path[2]="src/main/webapp/css"
+static_path[3]="src/main/webapp/tpl"
+static_path[4]="src/main/webapp/main"
 
 # path for Apache Tomcat root directory, MUST HAS NOT trailing slash
 tomcat_path="/Library/Tomcat"
@@ -37,13 +37,17 @@ VERSION="0.1"
 LESS_COMPRESSOR=`which lessc`
 
 build() {
-	build=`mvn clean package -P$maven_profile -Dmaven.test.skip=$maven_skip_tests $maven_additional`
+	build=`cd $root_path && mvn clean package -P$maven_profile -Dmaven.test.skip=$maven_skip_tests $maven_additional`
 	# TODO: check for BUILD ERROR/SUCCESSFUL strings
 	echo "$build"
 }
 
 war() {
-	echo $1
+	result=`cd $root_path/target &&
+			sudo rm -f $tomcat_path/webapps/$tomcat_app.war && 
+			sudo rm -rf $tomcat_path/webapps/$tomcat_app && 
+			cp $tomcat_app.war $tomcat_path/webapps/$tomcat_app.war`
+	echo "WAR was copied"
 }
 
 less() {
@@ -63,9 +67,19 @@ tomcat() {
 	    ;; 
 
 		"stop")   
-			# TODO: use tomcat_hard_stop
 			echo "Tomcat is stopping..."
-			result=`sh $tomcat_path/bin/shutdown.sh`
+
+			if [ $tomcat_hard_stop == "true" ]; then
+				CPID=`ps -axe | grep Tomcat | grep java | awk '{print $1}'`
+				if [[ "$CPID" != "" && "$CPID" -ge 0 ]]; then
+					sudo kill -9 $CPID
+					result="Killed procces: $CPID"
+				else
+					result="Tomcat was not started"
+				fi
+			else
+				result=`sh $tomcat_path/bin/shutdown.sh`
+			fi
 	    ;; 
 
 		"restart")
@@ -120,20 +134,21 @@ if [ $# -gt 0 ]; then
 
 		"build")
 			build=`build`
-			#echo "Build is done"
 			echo "$build"
 		;;
 
 		"war")
-			echo $VERSION
+			echo "$(war)"
 		;;
 
 		"less")
-			echo $VERSION
+			# TODO
+			echo "`help`"
 		;;
 
 		"static")
-			echo $VERSION
+			# TODO
+			echo "`help`"
 		;;
 
 		"tomcat")
@@ -145,15 +160,18 @@ if [ $# -gt 0 ]; then
 		;;
 
 		"test")
-			echo $VERSION
+			result=`cd $root_path && mvn clean test -P$maven_profile -P $2 -Dtest=$3 $maven_additional`
+			echo "$result"
 		;;				
 
 		"full")
-			echo $VERSION
+			# TODO
+			echo "`help`"
 		;;
 
 		"full-static")
-			echo $VERSION
+			# TODO
+			echo "`help`"
 		;;								
     esac
 
