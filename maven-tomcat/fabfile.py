@@ -2,13 +2,13 @@ from fabric.api import local, settings
 from fabric.utils import puts, warn
 
 # root path for project, MUST HAS NOT trailing slash
-root_path = "Main-app"
+root_path = "~/_Dev/10sheet/Main-app/webapp"
 
 # list of paths with static files; from root_path
 static_paths = [
-    "webapp/src/main/webapp/templates",
-    "webapp/src/main/webapp/recurly-js",
-    "webapp/src/main/webapp/pages"
+    "src/main/webapp/templates",
+    "src/main/webapp/recurly-js",
+    "src/main/webapp/pages"
 ]
 
 # path for Apache Tomcat root directory, MUST HAS NOT trailing slash
@@ -26,9 +26,6 @@ maven_profile = "local-slava"
 
 # Maven can skip tests
 maven_skip_tests = True
-
-# additional options for Maven
-maven_additional = "-o" # by default - make it offline
 
 ###
 
@@ -48,8 +45,7 @@ def tomcat(action):
         if tomcat_hard_stop:
 
             # there are can be a few tomcat instances, let's terminate them all
-            processes_query = local("ps -axe | grep Tomcat | grep java | awk '{print $1}'", True)
-            processes_ids = processes_query.split()
+            processes_ids = local("ps -axe | grep Tomcat | grep java | awk '{print $1}'", True).split()
 
             for id in processes_ids:
                 if int(id) > 0:
@@ -69,20 +65,25 @@ def static():
         local("sudo cp -R "+root_path+"/"+path+" "+tomcat_path+"/webapps/"+tomcat_app+"/")
 
 def build():
-    pass
+    local("cd "+root_path+" && mvn clean package -P"+maven_profile+" -Dmaven.test.skip="+maven_skip_tests+" "+maven_additional+"")
+
+def clean_project():
+    local("rm -f "+tomcat_path+"/webapps/"+tomcat_app+".war && rm -rf "+tomcat_path+"/webapps/"+tomcat_app+"")
 
 def war():
-    pass
+    local("cd "+root_path+"/target && cp "+tomcat_app+".war "+tomcat_path+"/webapps/"+tomcat_app+".war")
 
 def less():
     pass
 
 # Example: mvn clean test -Plocal-user -P run-some-tests -Dtest=SomeTest -o
-def test(profile, name):
+# TODO: fix maven_offline
+def test(profile, name, maven_offline=True):
+    maven_additional = "-o" if maven_offline else ""
     local("cd "+root_path+" && mvn clean test -P"+maven_profile+" -P "+profile+" -Dtest="+name+" "+maven_additional+"")
 
-def db_test(name):
-    test("run-db-tests", name)
+def db_test(name, maven_offline=True):
+    test("run-db-tests", name, maven_offline)
 
 def help():
     puts("""
@@ -104,9 +105,9 @@ def help():
         less                        - compile css files from Less
         static                      - copy current static files to Tomcat
 
-        tomcat [start|stop|restart] - Tomcat management
+        tomcat:[start|stop|restart] - Tomcat management
 
-        test [test profile] [name]  - run test with specified profile and class name with Maven
+        test:[test profile],[name]  - run test with specified profile and class name with Maven
         db_test                     - run test with "run-db-tests" profile
 
         full                        - 'less' + 'build' + 'war' commands coherently
