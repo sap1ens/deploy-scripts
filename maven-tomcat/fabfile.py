@@ -2,13 +2,12 @@ from fabric.api import local, settings
 from fabric.utils import puts, warn
 
 # root path for project, MUST HAS NOT trailing slash
-root_path = "~/_Dev/10sheet/Main-app"
+root_path = "~/work/demo"
 
 # list of paths with static files; from root_path
 static_paths = [
-    "webapp/src/main/webapp/templates",
-    "webapp/src/main/webapp/recurly-js",
-    "webapp/src/main/webapp/pages"
+    "src/main/webapp/css",
+    "src/main/webapp/js"
 ]
 
 # path for Apache Tomcat root directory, MUST HAS NOT trailing slash
@@ -22,7 +21,7 @@ tomcat_app = "ROOT"
 tomcat_hard_stop = True
 
 # Maven profile for building
-maven_profile = "local-slava"
+maven_profile = "user"
 
 # Maven can skip tests
 maven_skip_tests = "true"
