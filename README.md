@@ -1,1 +1,2 @@
-Deployment (and not only...) tool for work in Apache Tomcat + Maven + ... + Less environment
+Collection of different deployment scripts.
+Right now it contains only "maven-tomcat" tool.
