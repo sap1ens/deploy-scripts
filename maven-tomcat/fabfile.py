@@ -106,6 +106,10 @@ def test(profile, name, module=None, maven_offline=True):
         "extra": "-o" if maven_offline else ""
     })
 
+def jpda():
+    tomcat("stop")
+    local("cd %s/bin && ./catalina.sh jpda start" % tomcat_path)
+
 def full(module=None):
     build(module)
     tomcat("stop")
@@ -131,10 +135,10 @@ def help():
         static                      - copy current static files to Tomcat
 
         tomcat:[start|stop|restart] - Tomcat management
+        clean                       - clean deployed Tomcat app
+        jpda                        - run Tomcat's JPDA
 
         test:[test profile],[name]  - run test with specified profile and class name with Maven
-
-        clean                       - clean deployed Tomcat app
 
         full                        - 'build' + 'tomcat:stop' + 'war' + 'tomcat:start' commands coherently
     """)
