@@ -1,12 +1,10 @@
 from fabric.api import local
 
 # prefix for "paths", without trailing slash, can be empty
-path_prefix = "~/_Dev/10sheet/Main-app/webapp/src/main/webapp/templates"
+path_prefix = "~/work/demo"
 
 paths = [
     {"less": "app/less/main", "css": "app/assets/css/main", "min": True},
-    {"less": "bookkeeper/less/main", "css": "bookkeeper/assets/css/main", "min": True},
-    {"less": "client-b/less/main", "css": "client-b/assets/css/main", "min": True},
     {"less": "press/assets/less/main", "css": "press/assets/css/main", "min": False}
 ]
 
