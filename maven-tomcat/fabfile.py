@@ -90,7 +90,7 @@ def clean():
     })
 
 def war():
-    local("cd %(root)s/target && cp %(app)s.war %(path)s/webapps/%(app)s.war" % {
+    local("rm -f %(path)s/webapps/%(app)s.war && rm -rf %(path)s/webapps/%(app)s && cd %(root)s/target && cp %(app)s.war %(path)s/webapps/%(app)s.war" % {
         'root': root_path + "/" + maven_web_module,
         'app': tomcat_app,
         'path': tomcat_path
