@@ -52,7 +52,10 @@ def tomcat(action):
                 if int(id) > 0:
                     with settings(warn_only = True):
                         status = local("sudo kill -9 %s" % id)
-                        if status.succeeded: puts("Killed procces: %s" % id)
+                        if status.succeeded:
+                            puts("Killed procces: %s" % id)
+                        else:
+                            break
 
         else:
             local("sh %s/bin/shutdown.sh" % tomcat_path)
